@@ -6,13 +6,16 @@ import { Link } from 'react-router-dom'
 import { LoginAccount } from 'src/apis/auth.api'
 import Input from 'src/components/Input'
 import { LoginSchema, loginSchema } from 'src/utils/rules'
-import { toast } from 'react-toastify'
 import { isAxiosErrorUnprocessableEntity } from 'src/utils/utils'
-import { ResponseApi } from 'src/types/utils.type'
+import { ErrorResponse } from 'src/types/utils.type'
+import { useContext } from 'react'
+import { AppContext } from 'src/contexts/app.context'
+import Button from 'src/components/Button'
 
 type FormData = LoginSchema
 
 export default function Login() {
+  const { setIsAuthenticated, setProfile } = useContext(AppContext)
   const {
     formState: { errors },
     handleSubmit,
@@ -29,11 +32,12 @@ export default function Login() {
   const onSubmit = handleSubmit((data) => {
     loginAccountMutation.mutate(data, {
       onSuccess: (data) => {
-        const message = data.data.message
-        toast.success(message)
+        setIsAuthenticated(true)
+        console.log(data)
+        setProfile(data.data.data.user)
       },
       onError: (error) => {
-        if (isAxiosErrorUnprocessableEntity<ResponseApi<Omit<FormData, 'confirm_password'>>>(error)) {
+        if (isAxiosErrorUnprocessableEntity<ErrorResponse<Omit<FormData, 'confirm_password'>>>(error)) {
           const formError = error.response?.data.data
           if (formError?.email) {
             setError('email', { message: formError.email, type: 'Server' })
@@ -72,9 +76,14 @@ export default function Login() {
                 autoComplete='on'
               />
               <div className='mt-2'>
-                <button className='w-full text-center bg-red-500 py-4 px-2 text-white hover:bg-red-600'>
+                <Button
+                  type='submit'
+                  disabled={loginAccountMutation.isLoading}
+                  isLoading={loginAccountMutation.isLoading}
+                  className='flex justify-center items-center w-full text-center bg-red-500 py-4 px-2 text-white hover:bg-red-600'
+                >
                   Đăng nhập
-                </button>
+                </Button>
               </div>
               <div className='mt-8 flex justify-center items-center'>
                 <span className='text-gray-400'>Bạn mới biết đến Shopee?</span>

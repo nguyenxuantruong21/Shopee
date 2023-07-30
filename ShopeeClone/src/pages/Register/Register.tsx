@@ -1,18 +1,23 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Input from 'src/components/Input'
 import { Schema, schema } from 'src/utils/rules'
 import { useMutation } from '@tanstack/react-query'
 import { registerAccount } from 'src/apis/auth.api'
 import { omit } from 'lodash'
 import { isAxiosErrorUnprocessableEntity } from 'src/utils/utils'
-import { ResponseApi } from 'src/types/utils.type'
+import { ErrorResponse } from 'src/types/utils.type'
+import { useContext } from 'react'
+import { AppContext } from 'src/contexts/app.context'
+import Button from 'src/components/Button'
 
 type FormData = Schema
 
 export default function Register() {
+  const { setIsAuthenticated, setProfile } = useContext(AppContext)
+  const navigate = useNavigate()
   const {
     formState: { errors },
     handleSubmit,
@@ -29,11 +34,13 @@ export default function Register() {
   const onSubmit = handleSubmit((data) => {
     const body = omit(data, ['confirm_password'])
     registerAccountMutation.mutate(body, {
-      onSuccess: () => {
-        console.log(data)
+      onSuccess: (data) => {
+        setIsAuthenticated(true)
+        setProfile(data.data.data.user)
+        navigate('/')
       },
       onError: (error) => {
-        if (isAxiosErrorUnprocessableEntity<ResponseApi<Omit<FormData, 'confirm_password'>>>(error)) {
+        if (isAxiosErrorUnprocessableEntity<ErrorResponse<Omit<FormData, 'confirm_password'>>>(error)) {
           const formError = error.response?.data.data
           if (formError?.email) {
             setError('email', { message: formError.email, type: 'Server' })
@@ -81,9 +88,14 @@ export default function Register() {
                 autoComplete='on'
               />
               <div className='mt-2'>
-                <button className='w-full text-center py-4 px-2 bg-red-500 text-white  hover:bg-red-600'>
+                <Button
+                  type='submit'
+                  disabled={registerAccountMutation.isLoading}
+                  isLoading={registerAccountMutation.isLoading}
+                  className='flex justify-center items-center w-full text-center py-4 px-2 bg-red-500 text-white  hover:bg-red-600'
+                >
                   Đăng ký
-                </button>
+                </Button>
               </div>
               <div className='flex items-center justify-center mt-8'>
                 <span className='text-gray-400'>Bạn đã có tài khoản?</span>
