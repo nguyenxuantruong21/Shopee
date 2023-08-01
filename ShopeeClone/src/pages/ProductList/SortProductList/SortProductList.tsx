@@ -10,7 +10,7 @@ export default function SortProductList() {
           <button className='rounded-sm bg-white w-20 h-8 text-black  text-sm hover:cursor-pointer'>Mới nhất</button>
           <button className='rounded-sm bg-white w-20 h-8 text-black text-sm hover:cursor-pointer'>Bán chạy</button>
           <select className='rounded-sm bg-white w-40 h-8 text-black text-sm hover:cursor-pointer outline-none'>
-            <option value='' disabled>
+            <option defaultValue='' disabled>
               Giá
             </option>
             <option value='price:asc'>Giá: Thấp đến Cao</option>
