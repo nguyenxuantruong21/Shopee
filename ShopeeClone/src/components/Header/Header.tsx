@@ -5,6 +5,7 @@ import authApi from 'src/apis/auth.api'
 import { useContext } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 import { path } from 'src/constants/path'
+import { formatEmailShowUI } from 'src/utils/utils'
 
 export default function Header() {
   const { isAuthenticated, setIsAuthenticated, setProfile, profile } = useContext(AppContext)
@@ -89,7 +90,7 @@ export default function Header() {
                   className='rounded-full w-full h-full object-cover'
                 />
               </div>
-              <div>{profile?.email}</div>
+              <div>{profile?.email && formatEmailShowUI(profile?.email)}</div>
             </Popover>
           )}
           {!isAuthenticated && (
@@ -121,7 +122,7 @@ export default function Header() {
                 placeholder='Free ship đơn từ 0 đồng'
                 className='text-black px-3 py-2 flex-grow outline-none bg-transparent'
               />
-              <button className='rounded-sm py-2 px-6 bg-orange-600 flex-shrink-0 hover:opacity-90'>
+              <button className='rounded-sm text-white py-2 px-6 bg-orange-600 flex-shrink-0 hover:opacity-90'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'

@@ -1,12 +1,62 @@
-import { Link } from 'react-router-dom'
+import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import Button from 'src/components/Button'
-import Input from 'src/components/Input'
 import { path } from 'src/constants/path'
+import { QueryConfig } from '../ProductList'
+import { Category } from 'src/types/category'
+import classNames from 'classnames'
+import InputNumber from 'src/components/InputNumber'
+import { useForm, Controller } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup/src/yup.js'
+import { Schema, schema } from 'src/utils/rules'
+import { NoUndefinedField } from 'src/types/utils.type'
+import { ObjectSchema } from 'yup'
 
-export default function AsideFilter() {
+interface Props {
+  queryConfig: QueryConfig
+  categories: Category[]
+}
+
+type FormData = NoUndefinedField<Pick<Schema, 'price_min' | 'price_max'>>
+
+const priceSchema = schema.pick(['price_min', 'price_max'])
+
+export default function AsideFilter({ categories, queryConfig }: Props) {
+  const { category } = queryConfig
+  const {
+    control,
+    handleSubmit,
+    trigger,
+    formState: { errors }
+  } = useForm<FormData>({
+    defaultValues: {
+      price_max: '',
+      price_min: ''
+    },
+    resolver: yupResolver<FormData>(priceSchema as ObjectSchema<FormData>),
+    shouldFocusError: false
+  })
+
+  const navigate = useNavigate()
+
+  const onSubmit = handleSubmit((data) => {
+    navigate({
+      pathname: path.home,
+      search: createSearchParams({
+        ...queryConfig,
+        price_max: data.price_max,
+        price_min: data.price_min
+      }).toString()
+    })
+  })
+
   return (
     <div className='py-4'>
-      <Link to={path.home} className='flex items-center font-bold'>
+      <Link
+        to={path.home}
+        className={classNames('flex items-center font-bold', {
+          'text-orange-500': !category
+        })}
+      >
         <svg viewBox='0 0 12 10' className='w-3 h-4 mr-3 fill-current'>
           <g fillRule='evenodd' stroke='none' strokeWidth={1}>
             <g transform='translate(-373 -208)'>
@@ -24,19 +74,32 @@ export default function AsideFilter() {
       </Link>
       <div className='bg-gray-300 h-[1px] my-4'></div>
       <ul>
-        <li className='py-2 pl-2'>
-          <Link to={path.home} className='relative px-2 text-orange-600 font-semibold'>
-            <svg viewBox='0 0 4 7' className='h-2 w-2 fill-orange-500 absolute top-1 left-[-10px]'>
-              <polygon points='4 3.5 0 0 0 7'></polygon>
-            </svg>
-            Thời trang nam
-          </Link>
-        </li>
-        <li className='py-2 pl-2'>
-          <Link to={path.home} className='relative px-2'>
-            Điện thoại
-          </Link>
-        </li>
+        {categories.map((categoryItem) => {
+          const isActive = category === categoryItem._id
+          return (
+            <li className='py-2 pl-2' key={categoryItem._id}>
+              <Link
+                to={{
+                  pathname: path.home,
+                  search: createSearchParams({
+                    ...queryConfig,
+                    category: categoryItem._id
+                  }).toString()
+                }}
+                className={classNames('relative px-2', {
+                  'font-semibold text-orange-600': isActive
+                })}
+              >
+                {isActive && (
+                  <svg viewBox='0 0 4 7' className={classNames('h-2 w-2 fill-orange-500 absolute top-1 left-[-10px]')}>
+                    <polygon points='4 3.5 0 0 0 7'></polygon>
+                  </svg>
+                )}
+                {categoryItem.name}
+              </Link>
+            </li>
+          )
+        })}
       </ul>
       <Link to={path.home} className='flex items-center font-bold mt-4 uppercase'>
         <svg
@@ -61,22 +124,43 @@ export default function AsideFilter() {
       <div className='bg-gray-300 h-[1px] my-4' />
       <div className='my-5'>
         <div>Khoảng giá</div>
-        <form className='mt-2'>
-          <div className='flex items-start'>
-            <Input
-              placeholder='Từ'
-              className='grow-1'
-              name='form'
-              classNameInput='px-1 py-1 text-sm w-full border border-gray-300 rounded-sm focus:border-gray-500 outline-none'
+        <form className='mt-2 ' onSubmit={onSubmit}>
+          <div className='flex items-start h-12'>
+            <Controller
+              control={control}
+              name='price_min'
+              render={({ field }) => (
+                <InputNumber
+                  placeholder='Từ'
+                  className='grow-1'
+                  classNameInput='px-1 py-1 text-sm w-full border border-gray-300 rounded-sm focus:border-gray-500 outline-none'
+                  {...field}
+                  onChange={(event) => {
+                    field.onChange(event)
+                    trigger('price_max')
+                  }}
+                />
+              )}
             />
             <div className='mx-2 mt-1 shrink-0 text-gray-400'>-</div>
-            <Input
-              placeholder='Đến'
-              className='grow-1'
-              name='form'
-              classNameInput='px-1 py-1 text-sm w-full border border-gray-300 rounded-sm focus:border-gray-500 outline-none'
+            <Controller
+              control={control}
+              name='price_max'
+              render={({ field }) => (
+                <InputNumber
+                  placeholder='Đến'
+                  className='grow-1'
+                  classNameInput='px-1 py-1 text-sm w-full border border-gray-300 rounded-sm focus:border-gray-500 outline-none'
+                  {...field}
+                  onChange={(event) => {
+                    field.onChange(event)
+                    trigger('price_min')
+                  }}
+                />
+              )}
             />
           </div>
+          <div className='text-red-600 text-center h-5'>{errors.price_min?.message}</div>
           <Button type='submit' className=' w-full text-center bg-orange-600 py-2 px-2 text-white'>
             Áp dụng
           </Button>

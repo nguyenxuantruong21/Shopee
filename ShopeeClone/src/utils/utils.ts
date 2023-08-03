@@ -9,6 +9,10 @@ export function isAxiosError<T>(error: unknown): error is AxiosError<T> {
 export function isAxiosErrorUnprocessableEntity<FormError>(error: unknown): error is AxiosError<FormError> {
   return isAxiosError(error) && error.response?.status === HttpStatusCode.UnprocessableEntity
 }
+//handle email show in UI
+export function formatEmailShowUI(email: string) {
+  return email.split('@')[0]
+}
 
 // format number in product list
 export function formatCurrency(currency: number) {
