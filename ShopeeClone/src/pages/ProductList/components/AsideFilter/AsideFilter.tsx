@@ -1,7 +1,6 @@
 import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import Button from 'src/components/Button'
 import { path } from 'src/constants/path'
-import { QueryConfig } from '../../ProductList'
 import { Category } from 'src/types/category'
 import classNames from 'classnames'
 import InputNumber from 'src/components/InputNumber'
@@ -12,6 +11,7 @@ import { NoUndefinedField } from 'src/types/utils.type'
 import { ObjectSchema } from 'yup'
 import RatingStar from 'src/pages/ProductList/components/RatingStar'
 import { omit } from 'lodash'
+import { QueryConfig } from 'src/hooks/useQueryConfig'
 
 interface Props {
   queryConfig: QueryConfig
@@ -30,14 +30,14 @@ export default function AsideFilter({ categories, queryConfig }: Props) {
     control,
     handleSubmit,
     trigger,
-    formState: { errors }
+    formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
       price_max: '',
-      price_min: ''
+      price_min: '',
     },
     resolver: yupResolver<FormData>(priceSchema as ObjectSchema<FormData>),
-    shouldFocusError: false
+    shouldFocusError: false,
   })
 
   const onSubmit = handleSubmit((data) => {
@@ -46,15 +46,15 @@ export default function AsideFilter({ categories, queryConfig }: Props) {
       search: createSearchParams({
         ...queryConfig,
         price_max: data.price_max,
-        price_min: data.price_min
-      }).toString()
+        price_min: data.price_min,
+      }).toString(),
     })
   })
 
   const handleRemoveAll = () => {
     navigate({
       pathname: path.home,
-      search: createSearchParams(omit(queryConfig, ['category', 'price_max', 'price_min', 'rating_filter'])).toString()
+      search: createSearchParams(omit(queryConfig, ['category', 'price_max', 'price_min', 'rating_filter'])).toString(),
     })
   }
 
@@ -63,7 +63,7 @@ export default function AsideFilter({ categories, queryConfig }: Props) {
       <Link
         to={path.home}
         className={classNames('flex items-center font-bold', {
-          'text-orange-500': !category
+          'text-orange-500': !category,
         })}
       >
         <svg viewBox='0 0 12 10' className='w-3 h-4 mr-3 fill-current'>
@@ -92,11 +92,11 @@ export default function AsideFilter({ categories, queryConfig }: Props) {
                   pathname: path.home,
                   search: createSearchParams({
                     ...queryConfig,
-                    category: categoryItem._id
-                  }).toString()
+                    category: categoryItem._id,
+                  }).toString(),
                 }}
                 className={classNames('relative px-2', {
-                  'font-semibold text-orange-600': isActive
+                  'font-semibold text-orange-600': isActive,
                 })}
               >
                 {isActive && (

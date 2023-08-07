@@ -28,7 +28,7 @@ export const schema = yup.object({
         return Number(price_min) <= Number(price_max)
       }
       return price_min !== '' || price_max !== ''
-    }
+    },
   }),
   price_max: yup.string().test({
     name: 'price-not-allowed',
@@ -40,8 +40,9 @@ export const schema = yup.object({
         return Number(price_min) <= Number(price_max)
       }
       return price_min !== '' || price_max !== ''
-    }
-  })
+    },
+  }),
+  name: yup.string().required('Tên sản phẩm là bắt buộc').trim(),
 })
 
 export type Schema = yup.InferType<typeof schema>

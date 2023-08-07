@@ -1,14 +1,16 @@
 import { useQuery } from '@tanstack/react-query'
 import { useParams } from 'react-router-dom'
 import productApi from 'src/apis/product.api'
-import InputNumber from 'src/components/InputNumber'
 import ProductRating from 'src/components/ProductRating'
 import { discountRate, formatCurrency, formatNumberToSocial, getIdFromNameId } from 'src/utils/utils'
 import DOMPurify from 'dompurify'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Product } from 'src/types/product.type'
+import { Product as ProductType } from 'src/types/product.type'
+import Product from '../ProductList/components/Product'
+import QuantityController from 'src/components/QuantityController'
 
 export default function ProductDetail() {
+  const [buyCount, setByCount] = useState(1)
   const { nameId } = useParams()
   const id = getIdFromNameId(nameId as string)
   const { data: productDetailData } = useQuery({
@@ -21,10 +23,21 @@ export default function ProductDetail() {
   const imageRef = useRef<HTMLImageElement>(null)
   const product = productDetailData?.data.data
 
+  // show current images
   const currentImages = useMemo(
     () => (product ? product.images.slice(...currentIndexImages) : []),
     [product, currentIndexImages],
   )
+
+  // show product lien quan theo categories id
+  const queryConfig = { limit: '20', page: '1', category: product?.category._id }
+  const { data: productData } = useQuery({
+    queryKey: ['Products', queryConfig],
+    queryFn: () => {
+      return productApi.getProducts(queryConfig)
+    },
+    staleTime: 3 * 60 * 1000,
+  })
 
   // show image first
   useEffect(() => {
@@ -42,7 +55,7 @@ export default function ProductDetail() {
   // [1,5]=>[2,6]=>[3,7]....
   const next = () => {
     console.log(currentIndexImages[1])
-    if (currentIndexImages[1] < (product as Product).images.length) {
+    if (currentIndexImages[1] < (product as ProductType).images.length) {
       setCurrentIndexImages((prev) => [prev[0] + 1, prev[1] + 1])
     }
   }
@@ -69,8 +82,13 @@ export default function ProductDetail() {
     image.style.left = left + 'px'
   }
 
+  // remove zoom image
   const handleRemoveZoom = () => {
     imageRef.current?.removeAttribute('style')
+  }
+
+  const handleSetBuyCount = (value: number) => {
+    setByCount(value)
   }
 
   if (!product) return null
@@ -138,6 +156,7 @@ export default function ProductDetail() {
                 </button>
               </div>
             </div>
+
             <div className='col-span-7'>
               <h1 className='text-xl font-medium uppercase'>{product.name}</h1>
               <div className='mt-8 flex items-center'>
@@ -164,38 +183,7 @@ export default function ProductDetail() {
               </div>
               <div className='flex items-center mt-8'>
                 <div className='text-gray-500 capitalize'>Số lượng</div>
-                <div className='flex ml-10 items-center'>
-                  <button className='flex h-8 w-8 items-center justify-center rounded-l-sm border border-gray-300 text-gray-600'>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      strokeWidth={1.5}
-                      stroke='currentColor'
-                      className='w-4 h-4'
-                    >
-                      <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 12h-15' />
-                    </svg>
-                  </button>
-                  <InputNumber
-                    value={1}
-                    className=''
-                    classNameError='hidden'
-                    classNameInput='h-8 w-14 border border-t border-b border-gray-300 text-center outline-none'
-                  />
-                  <button className='flex h-8 w-8 items-center justify-center rounded-l-sm border border-gray-300 text-gray-600'>
-                    <svg
-                      xmlns='http://www.w3.org/2000/svg'
-                      fill='none'
-                      viewBox='0 0 24 24'
-                      strokeWidth={1.5}
-                      stroke='currentColor'
-                      className='w-4 h-4'
-                    >
-                      <path strokeLinecap='round' strokeLinejoin='round' d='M12 4.5v15m7.5-7.5h-15' />
-                    </svg>
-                  </button>
-                </div>
+                <QuantityController value={buyCount} handleSetBuyCount={handleSetBuyCount} max={product.quantity} />
                 <div className='ml-6 text-sm text-gray-500'>{product.quantity} Sản phẩm có sẵn</div>
               </div>
               <div className='mt-8 flex items-center '>
@@ -248,16 +236,27 @@ export default function ProductDetail() {
             </div>
           </div>
         </div>
+
         <div className='mt-8 bg-white p-4 shadow'>
-          <div className='container'>
-            <div className='rounded bg-gray-50 p-4 text-lg uppercase'>mô tả sản phẩm</div>
-            <div className='mx-4 mt-12 mb-4 text-sm leading-loose'>
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(product.description),
-                }}
-              ></div>
-            </div>
+          <div className='rounded bg-gray-50 p-4 text-lg uppercase'>mô tả sản phẩm</div>
+          <div className='mx-4 mt-12 mb-4 text-sm leading-loose'>
+            <div
+              dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(product.description),
+              }}
+            ></div>
+          </div>
+        </div>
+
+        <div className='mt-8'>
+          <div className='text-gray-400 uppercase'>SẢN PHẨM LIÊN QUAN</div>
+          <div className='mt-6 grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 '>
+            {productData &&
+              productData.data.data.products.map((product: any) => (
+                <div className='col-span-1' key={product._id}>
+                  <Product product={product} />
+                </div>
+              ))}
           </div>
         </div>
       </div>

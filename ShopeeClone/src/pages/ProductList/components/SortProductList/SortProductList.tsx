@@ -1,10 +1,10 @@
 import { sortBy, order as orderConst } from 'src/constants/product'
-import { QueryConfig } from '../../ProductList'
 import { ProductListConfig } from 'src/types/product.type'
 import classNames from 'classnames'
 import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import { path } from 'src/constants/path'
 import { omit } from 'lodash'
+import { QueryConfig } from 'src/hooks/useQueryConfig'
 
 interface Props {
   queryConfig: QueryConfig
@@ -27,11 +27,11 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
         omit(
           {
             ...queryConfig,
-            sort_by: sortByValue
+            sort_by: sortByValue,
           },
-          ['order']
-        )
-      ).toString()
+          ['order'],
+        ),
+      ).toString(),
     })
   }
 
@@ -41,8 +41,8 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
       search: createSearchParams({
         ...queryConfig,
         sort_by: sortBy.price,
-        order: orderValue
-      }).toString()
+        order: orderValue,
+      }).toString(),
     })
   }
 
@@ -54,7 +54,7 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
           <button
             className={classNames('rounded-sm bg-orange-600 w-20 h-8 text-sm hover:cursor-pointer', {
               ' bg-orange-600 text-white hover:bg-orange-600/80': isActiveSortBy(sortBy.view),
-              'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.view)
+              'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.view),
             })}
             onClick={() => handleSort(sortBy.view)}
           >
@@ -63,7 +63,7 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
           <button
             className={classNames('rounded-sm bg-orange-600 w-20 h-8 text-sm hover:cursor-pointer', {
               ' bg-orange-600 text-white hover:bg-orange-600/80': isActiveSortBy(sortBy.createdAt),
-              'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.createdAt)
+              'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.createdAt),
             })}
             onClick={() => handleSort(sortBy.createdAt)}
           >
@@ -72,7 +72,7 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
           <button
             className={classNames('rounded-sm bg-orange-600 w-20 h-8 text-sm hover:cursor-pointer', {
               ' bg-orange-600 text-white hover:bg-orange-600/80': isActiveSortBy(sortBy.sold),
-              'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.sold)
+              'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.sold),
             })}
             onClick={() => handleSort(sortBy.sold)}
           >
@@ -81,7 +81,7 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
           <select
             className={classNames(' w-40 h-8 text-sm hover:cursor-pointer outline-none', {
               ' bg-orange-600 text-white hover:bg-orange-600/80': isActiveSortBy(sortBy.price),
-              'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.price)
+              'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.price),
             })}
             value={order || ''}
             onChange={(event) => handlePriceOrder(event.target.value as Exclude<ProductListConfig['order'], undefined>)}
@@ -122,8 +122,8 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
                   pathname: path.home,
                   search: createSearchParams({
                     ...queryConfig,
-                    page: (page - 1).toString()
-                  }).toString()
+                    page: (page - 1).toString(),
+                  }).toString(),
                 }}
                 className='w-9 h-8 flex justify-center items-center cursor-pointer rounded-tl-sm bg-white shadow'
               >
@@ -158,8 +158,8 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
                   pathname: path.home,
                   search: createSearchParams({
                     ...queryConfig,
-                    page: (page + 1).toString()
-                  }).toString()
+                    page: (page + 1).toString(),
+                  }).toString(),
                 }}
                 className='w-9 h-8 flex justify-center items-center cursor-pointer rounded-tl-sm bg-white shadow'
               >
