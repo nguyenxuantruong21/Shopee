@@ -11,6 +11,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     // Disable các rule mà eslint xung đột với prettier.
     // Để cái này ở dưới để nó override các rule phía trên!.
+    "plugin:react-hooks/recommended",
     'eslint-config-prettier',
     'prettier',
     'plugin:storybook/recommended'
@@ -49,7 +50,8 @@ module.exports = {
         useTabs: false,
         singleQuote: true,
         printWidth: 120,
-        jsxSingleQuote: true
+        jsxSingleQuote: true,
+
       }
     ]
   }

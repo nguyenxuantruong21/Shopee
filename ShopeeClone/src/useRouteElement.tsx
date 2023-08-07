@@ -8,6 +8,7 @@ import Profile from './pages/Profile'
 import { useContext } from 'react'
 import { AppContext } from './contexts/app.context'
 import { path } from './constants/path'
+import ProductDetail from './pages/ProductDetail'
 
 export default function useRouteElement() {
   const ProtectedRoute = () => {
@@ -28,21 +29,7 @@ export default function useRouteElement() {
         <MainLayout>
           <ProductList />
         </MainLayout>
-      )
-    },
-    {
-      path: '',
-      element: <ProtectedRoute />,
-      children: [
-        {
-          path: path.profile,
-          element: (
-            <RegisterLayout>
-              <Profile></Profile>
-            </RegisterLayout>
-          )
-        }
-      ]
+      ),
     },
     {
       path: '',
@@ -54,7 +41,7 @@ export default function useRouteElement() {
             <RegisterLayout>
               <Login></Login>
             </RegisterLayout>
-          )
+          ),
         },
         {
           path: path.register,
@@ -62,10 +49,32 @@ export default function useRouteElement() {
             <RegisterLayout>
               <Register></Register>
             </RegisterLayout>
-          )
-        }
-      ]
-    }
+          ),
+        },
+      ],
+    },
+    {
+      path: '',
+      element: <ProtectedRoute />,
+      children: [
+        {
+          path: path.profile,
+          element: (
+            <RegisterLayout>
+              <Profile></Profile>
+            </RegisterLayout>
+          ),
+        },
+      ],
+    },
+    {
+      path: path.productDetail,
+      element: (
+        <MainLayout>
+          <ProductDetail />
+        </MainLayout>
+      ),
+    },
   ])
   return routeElement
 }

@@ -1,7 +1,7 @@
 import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import Button from 'src/components/Button'
 import { path } from 'src/constants/path'
-import { QueryConfig } from '../ProductList'
+import { QueryConfig } from '../../ProductList'
 import { Category } from 'src/types/category'
 import classNames from 'classnames'
 import InputNumber from 'src/components/InputNumber'
@@ -10,6 +10,8 @@ import { yupResolver } from '@hookform/resolvers/yup/src/yup.js'
 import { Schema, schema } from 'src/utils/rules'
 import { NoUndefinedField } from 'src/types/utils.type'
 import { ObjectSchema } from 'yup'
+import RatingStar from 'src/pages/ProductList/components/RatingStar'
+import { omit } from 'lodash'
 
 interface Props {
   queryConfig: QueryConfig
@@ -22,6 +24,8 @@ const priceSchema = schema.pick(['price_min', 'price_max'])
 
 export default function AsideFilter({ categories, queryConfig }: Props) {
   const { category } = queryConfig
+  const navigate = useNavigate()
+
   const {
     control,
     handleSubmit,
@@ -36,8 +40,6 @@ export default function AsideFilter({ categories, queryConfig }: Props) {
     shouldFocusError: false
   })
 
-  const navigate = useNavigate()
-
   const onSubmit = handleSubmit((data) => {
     navigate({
       pathname: path.home,
@@ -48,6 +50,13 @@ export default function AsideFilter({ categories, queryConfig }: Props) {
       }).toString()
     })
   })
+
+  const handleRemoveAll = () => {
+    navigate({
+      pathname: path.home,
+      search: createSearchParams(omit(queryConfig, ['category', 'price_max', 'price_min', 'rating_filter'])).toString()
+    })
+  }
 
   return (
     <div className='py-4'>
@@ -161,87 +170,24 @@ export default function AsideFilter({ categories, queryConfig }: Props) {
             />
           </div>
           <div className='text-red-600 text-center h-5'>{errors.price_min?.message}</div>
-          <Button type='submit' className=' w-full text-center bg-orange-600 py-2 px-2 text-white'>
+          <Button
+            type='submit'
+            className=' w-full text-center bg-orange-600 py-2 px-2 text-white  hover:bg-orange-600/80'
+          >
             Áp dụng
           </Button>
         </form>
       </div>
       <div className='bg-gray-300 h-[1px] my-4' />
       <div className='text-sm'>Đánh giá</div>
-      <ul>
-        <li className='py-1 pl-2'>
-          <Link to={''} className='flex items-center text-sm'>
-            {Array(5)
-              .fill(0)
-              .map((_, index) => (
-                <svg viewBox='0 0 9.5 8' className='w-4 h-4 mr-1' key={index}>
-                  <defs>
-                    <linearGradient id='ratingStarGradient' x1='50%' x2='50%' y1='0%' y2='100%'>
-                      <stop offset={0} stopColor='#ffca11' />
-                      <stop offset={1} stopColor='#ffad27' />
-                    </linearGradient>
-                    <polygon
-                      id='ratingStar'
-                      points='14.910357 6.35294118 12.4209136 7.66171903 12.896355 4.88968305 10.8823529 2.92651626 13.6656353 2.52208166 14.910357 0 16.1550787 2.52208166 18.9383611 2.92651626 16.924359 4.88968305 17.3998004 7.66171903'
-                    />
-                  </defs>
-                  <g fill='url(#ratingStarGradient)' fillRule='evenodd' stroke='none' strokeWidth={1}>
-                    <g transform='translate(-876 -1270)'>
-                      <g transform='translate(155 992)'>
-                        <g transform='translate(600 29)'>
-                          <g transform='translate(10 239)'>
-                            <g transform='translate(101 10)'>
-                              <use stroke='#ffa727' strokeWidth='.5' xlinkHref='#ratingStar' />
-                            </g>
-                          </g>
-                        </g>
-                      </g>
-                    </g>
-                  </g>
-                </svg>
-              ))}
-            <span>Trở lên</span>
-          </Link>
-        </li>
-        <li className='py-1 pl-2'>
-          <Link to={''} className='flex items-center text-sm'>
-            {Array(5)
-              .fill(0)
-              .map((_, index) => (
-                <svg viewBox='0 0 9.5 8' className='w-4 h-4 mr-1' key={index}>
-                  <defs>
-                    <linearGradient id='ratingStarGradient' x1='50%' x2='50%' y1='0%' y2='100%'>
-                      <stop offset={0} stopColor='#ffca11' />
-                      <stop offset={1} stopColor='#ffad27' />
-                    </linearGradient>
-                    <polygon
-                      id='ratingStar'
-                      points='14.910357 6.35294118 12.4209136 7.66171903 12.896355 4.88968305 10.8823529 2.92651626 13.6656353 2.52208166 14.910357 0 16.1550787 2.52208166 18.9383611 2.92651626 16.924359 4.88968305 17.3998004 7.66171903'
-                    />
-                  </defs>
-                  <g fill='url(#ratingStarGradient)' fillRule='evenodd' stroke='none' strokeWidth={1}>
-                    <g transform='translate(-876 -1270)'>
-                      <g transform='translate(155 992)'>
-                        <g transform='translate(600 29)'>
-                          <g transform='translate(10 239)'>
-                            <g transform='translate(101 10)'>
-                              <use stroke='#ffa727' strokeWidth='.5' xlinkHref='#ratingStar' />
-                            </g>
-                          </g>
-                        </g>
-                      </g>
-                    </g>
-                  </g>
-                </svg>
-              ))}
-            <span>Trở lên</span>
-          </Link>
-        </li>
-      </ul>
+      <RatingStar queryConfig={queryConfig} />
       <div className='bg-gray-300 h-[1px] my-4' />
-      <Button type='submit' className=' w-full text-center bg-orange-600 py-2 px-2 text-white'>
-        Xóa tất cả
-      </Button>
+      <button
+        onClick={handleRemoveAll}
+        className=' w-full text-center bg-orange-600 py-2 px-2 text-white hover:bg-orange-600/80'
+      >
+        Xoá tất cả
+      </button>
     </div>
   )
 }
