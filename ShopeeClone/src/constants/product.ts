@@ -2,10 +2,10 @@ export const sortBy = {
   createdAt: 'createdAt',
   view: 'view',
   sold: 'sold',
-  price: 'price'
+  price: 'price',
 } as const
 
 export const order = {
   asc: 'asc',
-  desc: 'desc'
+  desc: 'desc',
 } as const

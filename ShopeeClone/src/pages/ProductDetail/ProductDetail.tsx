@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useNavigate, useParams } from 'react-router-dom'
 import productApi from 'src/apis/product.api'
 import ProductRating from 'src/components/ProductRating'
 import { discountRate, formatCurrency, formatNumberToSocial, getIdFromNameId } from 'src/utils/utils'
@@ -8,11 +8,17 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { Product as ProductType } from 'src/types/product.type'
 import Product from '../ProductList/components/Product'
 import QuantityController from 'src/components/QuantityController'
+import purchaseAPI from 'src/apis/purchase.api'
+import { purchasesStatus } from 'src/constants/purchase'
+import { toast } from 'react-toastify'
+import { path } from 'src/constants/path'
 
 export default function ProductDetail() {
   const [buyCount, setByCount] = useState(1)
   const { nameId } = useParams()
   const id = getIdFromNameId(nameId as string)
+  const queryClient = useQueryClient()
+
   const { data: productDetailData } = useQuery({
     queryKey: ['productDetail', id],
     queryFn: () => productApi.getProductDetail(id as string),
@@ -22,6 +28,7 @@ export default function ProductDetail() {
   const [activeImage, setActiveImage] = useState('')
   const imageRef = useRef<HTMLImageElement>(null)
   const product = productDetailData?.data.data
+  const navigate = useNavigate()
 
   // show current images
   const currentImages = useMemo(
@@ -37,6 +44,11 @@ export default function ProductDetail() {
       return productApi.getProducts(queryConfig)
     },
     staleTime: 3 * 60 * 1000,
+  })
+
+  // add to cart
+  const addToCartMutation = useMutation({
+    mutationFn: (body: { product_id: string; buy_count: number }) => purchaseAPI.addToCart(body),
   })
 
   // show image first
@@ -89,6 +101,34 @@ export default function ProductDetail() {
 
   const handleSetBuyCount = (value: number) => {
     setByCount(value)
+  }
+
+  // handle add to cart
+  const handleAddToCart = () => {
+    addToCartMutation.mutate(
+      { buy_count: buyCount, product_id: product?._id as string },
+      {
+        onSuccess: (data) => {
+          toast.success(data.data.message, {
+            autoClose: 1000,
+          })
+          queryClient.invalidateQueries({ queryKey: ['purchase', { status: purchasesStatus.inCart }] })
+        },
+      },
+    )
+  }
+
+  // buy now
+  const buyNow = async () => {
+    const res = await addToCartMutation.mutateAsync({ buy_count: buyCount, product_id: product?._id as string })
+    console.log(res)
+
+    const purchase = res.data.data
+    navigate(path.cart, {
+      state: {
+        purchaseId: purchase._id,
+      },
+    })
   }
 
   if (!product) return null
@@ -182,12 +222,21 @@ export default function ProductDetail() {
                 </div>
               </div>
               <div className='flex items-center mt-8'>
-                <div className='text-gray-500 capitalize'>Số lượng</div>
-                <QuantityController value={buyCount} handleSetBuyCount={handleSetBuyCount} max={product.quantity} />
+                <div className='text-gray-500 capitalize mr-6'>Số lượng</div>
+                <QuantityController
+                  value={buyCount}
+                  onDecrease={handleSetBuyCount}
+                  onIncrease={handleSetBuyCount}
+                  onType={handleSetBuyCount}
+                  max={product.quantity}
+                />
                 <div className='ml-6 text-sm text-gray-500'>{product.quantity} Sản phẩm có sẵn</div>
               </div>
               <div className='mt-8 flex items-center '>
-                <button className='flex h-12 items-center justify-center rounded-sm border border-orange-600 bg-orange-600/10 px-5 text-orange-600 hover:bg-orange-600/5'>
+                <button
+                  onClick={handleAddToCart}
+                  className='flex h-12 items-center justify-center rounded-sm border border-orange-600 bg-orange-600/10 px-5 text-orange-600 hover:bg-orange-600/5'
+                >
                   <svg
                     enable-background='new 0 0 15 15'
                     viewBox='0 0 15 15'
@@ -229,7 +278,10 @@ export default function ProductDetail() {
                   </svg>
                   Thêm Vào Giỏ Hàng
                 </button>
-                <button className='mx-6 bg-orange-600 h-12 px-3 rounded-sm text-white hover:bg-orange-600/90'>
+                <button
+                  onClick={buyNow}
+                  className='mx-6 bg-orange-600 h-12 px-3 rounded-sm text-white hover:bg-orange-600/90'
+                >
                   Mua Ngay
                 </button>
               </div>

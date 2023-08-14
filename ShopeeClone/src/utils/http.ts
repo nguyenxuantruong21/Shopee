@@ -14,8 +14,8 @@ class Http {
       baseURL: 'https://api-ecom.duthanhduoc.com/',
       timeout: 10000,
       headers: {
-        'Content-Type': 'application/json'
-      }
+        'Content-Type': 'application/json',
+      },
     })
     this.instance.interceptors.request.use(
       (config) => {
@@ -27,7 +27,7 @@ class Http {
       },
       (error) => {
         return Promise.reject(error)
-      }
+      },
     )
     // add a response interceptor
     this.instance.interceptors.response.use(
@@ -50,8 +50,12 @@ class Http {
           const message = data.message || error.message
           toast.error(message)
         }
+        if (error.response?.status === HttpStatusCode.Unauthorized) {
+          clearLS()
+          window.location.reload()
+        }
         return Promise.reject(error)
-      }
+      },
     )
   }
 }

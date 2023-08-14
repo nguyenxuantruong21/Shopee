@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import { Link, createSearchParams } from 'react-router-dom'
 import { path } from 'src/constants/path'
-import { QueryConfig } from 'src/pages/ProductList/ProductList'
+import { QueryConfig } from 'src/hooks/useQueryConfig'
 
 interface Props {
   queryConfig: QueryConfig
@@ -86,13 +86,13 @@ export default function Pagination({ queryConfig, pageSize }: Props) {
               pathname: path.home,
               search: createSearchParams({
                 ...queryConfig,
-                page: pageNumber.toString()
-              }).toString()
+                page: pageNumber.toString(),
+              }).toString(),
             }}
             key={index}
             className={classNames('bg-white rounded px-3 py-2 shadow-sm mx-2 cursor-pointer border', {
               'border-cyan-500': pageNumber === page,
-              'border-transparent': pageNumber !== page
+              'border-transparent': pageNumber !== page,
             })}
           >
             {pageNumber}
@@ -111,8 +111,8 @@ export default function Pagination({ queryConfig, pageSize }: Props) {
             pathname: path.home,
             search: createSearchParams({
               ...queryConfig,
-              page: (page - 1).toString()
-            }).toString()
+              page: (page - 1).toString(),
+            }).toString(),
           }}
           className='bg-white rounded px-3 py-2 shadow-sm mx-2 cursor-pointer'
         >
@@ -128,8 +128,8 @@ export default function Pagination({ queryConfig, pageSize }: Props) {
             pathname: path.home,
             search: createSearchParams({
               ...queryConfig,
-              page: (page + 1).toString()
-            }).toString()
+              page: (page + 1).toString(),
+            }).toString(),
           }}
           className='bg-white rounded px-3 py-2 shadow-sm mx-2 cursor-pointer'
         >

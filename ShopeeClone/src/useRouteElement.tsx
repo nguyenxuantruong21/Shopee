@@ -4,11 +4,16 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import RegisterLayout from './layouts/RegisterLayout'
 import MainLayout from './layouts/MainLayout'
-import Profile from './pages/Profile'
 import { useContext } from 'react'
 import { AppContext } from './contexts/app.context'
 import { path } from './constants/path'
 import ProductDetail from './pages/ProductDetail'
+import Cart from './pages/Cart'
+import CartLayout from './layouts/CartLayout'
+import UserLayout from './pages/User/Layouts/UserLayout'
+import ChangePassword from './pages/User/pages/ChangePassword'
+import HistoryPurchase from './pages/User/pages/HistoryPurchase'
+import Profile from './pages/User/pages/Profile'
 
 export default function useRouteElement() {
   const ProtectedRoute = () => {
@@ -32,6 +37,14 @@ export default function useRouteElement() {
       ),
     },
     {
+      path: path.productDetail,
+      element: (
+        <MainLayout>
+          <ProductDetail />
+        </MainLayout>
+      ),
+    },
+    {
       path: '',
       element: <RejectedRoute />,
       children: [
@@ -39,7 +52,7 @@ export default function useRouteElement() {
           path: path.login,
           element: (
             <RegisterLayout>
-              <Login></Login>
+              <Login />
             </RegisterLayout>
           ),
         },
@@ -47,7 +60,7 @@ export default function useRouteElement() {
           path: path.register,
           element: (
             <RegisterLayout>
-              <Register></Register>
+              <Register />
             </RegisterLayout>
           ),
         },
@@ -58,22 +71,49 @@ export default function useRouteElement() {
       element: <ProtectedRoute />,
       children: [
         {
-          path: path.profile,
+          path: path.cart,
           element: (
-            <RegisterLayout>
-              <Profile></Profile>
-            </RegisterLayout>
+            <CartLayout>
+              <Cart />
+            </CartLayout>
           ),
         },
+        {
+          path: path.user,
+          children: [
+            {
+              path: path.profile,
+              element: (
+                <MainLayout>
+                  <UserLayout>
+                    <Profile />
+                  </UserLayout>
+                </MainLayout>
+              ),
+            },
+            {
+              path: path.changePassword,
+              element: (
+                <MainLayout>
+                  <UserLayout>
+                    <ChangePassword />
+                  </UserLayout>
+                </MainLayout>
+              ),
+            },
+            {
+              path: path.historyPurchase,
+              element: (
+                <MainLayout>
+                  <UserLayout>
+                    <HistoryPurchase />
+                  </UserLayout>
+                </MainLayout>
+              ),
+            },
+          ],
+        },
       ],
-    },
-    {
-      path: path.productDetail,
-      element: (
-        <MainLayout>
-          <ProductDetail />
-        </MainLayout>
-      ),
     },
   ])
   return routeElement

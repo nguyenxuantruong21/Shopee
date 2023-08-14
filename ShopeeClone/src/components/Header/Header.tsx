@@ -1,147 +1,39 @@
-import { Link, createSearchParams, useNavigate } from 'react-router-dom'
-import { yupResolver } from '@hookform/resolvers/yup/src/yup.js'
+import { Link } from 'react-router-dom'
 import Popover from '../Popover'
-import { useMutation } from '@tanstack/react-query'
-import authApi from 'src/apis/auth.api'
 import { useContext } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 import { path } from 'src/constants/path'
-import { formatEmailShowUI } from 'src/utils/utils'
-import useQueryConfig from 'src/hooks/useQueryConfig'
-import { useForm } from 'react-hook-form'
-import { Schema, schema } from 'src/utils/rules'
-import { omit } from 'lodash'
+import { formatCurrency } from 'src/utils/utils'
+import purchaseAPI from 'src/apis/purchase.api'
+import { purchasesStatus } from 'src/constants/purchase'
+import noProduct from 'src/assets/images/no-product.png'
+import NavHeader from '../NavHeader'
+import { useQuery } from '@tanstack/react-query'
+import useSearchProduct from 'src/hooks/useSearchProduct'
 
-type FormData = Pick<Schema, 'name'>
-const nameSchema = schema.pick(['name'])
+const MAX_PURCHASE = 5
 
 export default function Header() {
-  const { isAuthenticated, setIsAuthenticated, setProfile, profile } = useContext(AppContext)
-  const queryConfig = useQueryConfig()
-  const navigate = useNavigate()
+  const { isAuthenticated } = useContext(AppContext)
 
-  const { register, handleSubmit } = useForm({
-    defaultValues: {
-      name: '',
-    },
-    resolver: yupResolver(nameSchema),
+  // list purchase
+  // khi chuyen trang thi header chi bi re-render chu khong bi unmount - mounting
+  // tru truong hop logout roi qua register va nguoc lai
+
+  const { data: purchasesInCartData } = useQuery({
+    queryKey: ['purchases', { status: purchasesStatus.inCart }],
+    queryFn: () => purchaseAPI.getPurchaseList({ status: purchasesStatus.inCart }),
+    enabled: Boolean(isAuthenticated),
   })
 
-  const logoutMutation = useMutation({
-    mutationFn: authApi.logoutAccount,
-    onSuccess: () => {
-      setIsAuthenticated(false)
-      setProfile(null)
-    },
-  })
+  const purchasesInCart = purchasesInCartData?.data.data
 
-  const handleLogout = () => {
-    logoutMutation.mutate()
-  }
-
-  const onSubmitSearch = handleSubmit((data) => {
-    const config = queryConfig.order
-      ? omit(
-          {
-            ...queryConfig,
-            name: data.name,
-          },
-          ['order'],
-        )
-      : {
-          ...queryConfig,
-          name: data.name,
-        }
-    navigate({
-      pathname: path.home,
-      search: createSearchParams(config).toString(),
-    })
-  })
+  const { onSubmitSearch, register } = useSearchProduct()
 
   return (
     <div className='p-5 pt-2 bg-[linear-gradient(-180deg,#f53d2d,#f63)]'>
       <div className='container'>
-        <div className='flex justify-end pb-3'>
-          <Popover
-            className='flex items-center py-1 hover:text-gray-300 hover:cursor-pointer text-white'
-            renderPopover={
-              <div className='bg-white relative shadow-sm rounded-sm border border-gray-200'>
-                <div className='flex flex-col py-2 pr-28 '>
-                  <button className='py-2 px-3 hover:text-orange-600'>Tiếng Việt</button>
-                  <button className='py-2 px-3 hover:text-orange-600 '>English</button>
-                </div>
-              </div>
-            }
-          >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              strokeWidth={1.5}
-              stroke='currentColor'
-              className='w-5 h-5'
-            >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                d='M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418'
-              />
-            </svg>
-            <span>Tiếng Việt</span>
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              fill='none'
-              viewBox='0 0 24 24'
-              strokeWidth={1.5}
-              stroke='currentColor'
-              className='w-5 h-5'
-            >
-              <path strokeLinecap='round' strokeLinejoin='round' d='M19.5 8.25l-7.5 7.5-7.5-7.5' />
-            </svg>
-          </Popover>
-
-          {isAuthenticated && (
-            <Popover
-              className='flex items-center py-1 hover:text-gray-300 hover:cursor-pointer text-white ml-6'
-              renderPopover={
-                <div className='bg-white relative shadow-sm rounded-sm border border-gray-200'>
-                  <div className='flex flex-col py-2 px-2'>
-                    <Link to={path.profile} className='py-2 px-3 hover:text-[#26aa99] text-left'>
-                      Tài khoản của tôi
-                    </Link>
-                    <Link to='/' className='py-2 px-3 hover:text-[#26aa99] text-left'>
-                      Đơn mua
-                    </Link>
-                    <button className='py-2 px-3  hover:text-[#26aa99] text-left' onClick={handleLogout}>
-                      Đăng Xuất
-                    </button>
-                  </div>
-                </div>
-              }
-            >
-              <div className='w-5 h-5 mr-2 flex-shrink-0 '>
-                <img
-                  src='https://down-vn.img.susercontent.com/file/00f19b3560b8b12a609f50ef1e70809e_tn'
-                  alt='avatar'
-                  className='rounded-full w-full h-full object-cover'
-                />
-              </div>
-              <div>{profile?.email && formatEmailShowUI(profile?.email)}</div>
-            </Popover>
-          )}
-          {!isAuthenticated && (
-            <div className='flex items-center'>
-              <Link to={path.register} className='mx-3 capitalize text-white hover:opacity-70'>
-                Đăng ký
-              </Link>
-              <div className='border-r-[1px] border-r-white h-4'></div>
-              <Link to={path.login} className='mx-3 capitalize text-white hover:opacity-70'>
-                Đăng nhập
-              </Link>
-            </div>
-          )}
-        </div>
-
+        <NavHeader />
         <div className='grid grid-cols-12 gap-4 items-end'>
           <Link to={path.home} className='col-span-2 pl-5 items-end '>
             <svg viewBox='0 0 192 65' className='h-11 w-full fill-white'>
@@ -182,38 +74,51 @@ export default function Header() {
               className=''
               renderPopover={
                 <div className='bg-white relative shadow-sm rounded-sm border border-gray-200 max-w-[400px] text-sm'>
-                  <div className='p-2'>
-                    <div className='text-gray-400 capitalize'>Sản phẩm thêm mới</div>
-                    <div className='mt-5'>
-                      <div className='mt-4 flex'>
-                        <div className='flex-shrink-0'>
-                          <img
-                            className='w-11 h-11 object-cover'
-                            src='https://down-vn.img.susercontent.com/file/2794606047fb10c205ee6826373b3726_tn'
-                            alt='anh'
-                          />
-                        </div>
-                        <div className='flex-grow ml-2 overflow-hidden'>
-                          <div className='truncate'>
-                            WISHDOIT Đồng Hồ Quartz Ba Mắt Đa Năng Dây Thép Không Gỉ Thời Trang Thể Thao Cho Nam
+                  {purchasesInCart && purchasesInCart.length > 0 ? (
+                    <div className='p-2'>
+                      <div className='text-gray-400 capitalize'>Sản phẩm thêm mới</div>
+                      <div className='mt-5'>
+                        {purchasesInCart?.slice(0, 5).map((purchaseItem) => (
+                          <div className='mt-2 py-2 flex hover:bg-slate-100'>
+                            <div className='flex-shrink-0'>
+                              <img
+                                className='w-11 h-11 object-cover'
+                                src={purchaseItem.product.image}
+                                alt={purchaseItem.product.name}
+                              />
+                            </div>
+                            <div className='flex-grow ml-2 overflow-hidden'>
+                              <div className='truncate'>{purchaseItem.product.name}</div>
+                            </div>
+                            <div className='ml-2 flex-shrink-0'>
+                              <span className='text-orange-600'>{formatCurrency(purchaseItem.product.price)}</span>
+                            </div>
                           </div>
+                        ))}
+                      </div>
+                      <div className='mt-6 flex items-center justify-between'>
+                        <div className='capitalize text-sm text-gray-400'>
+                          {purchasesInCart.length > MAX_PURCHASE ? purchasesInCart.length - MAX_PURCHASE : ''}
+                          <span className='ml-1'>Thêm vào giỏ hàng </span>
                         </div>
-                        <div className='ml-2 flex-shrink-0'>
-                          <span className='text-orange-600'>₫475.000</span>
-                        </div>
+                        <Link
+                          to={path.cart}
+                          className='capitalize bg-orange-600 hover:bg-opacity-80 px-4 yy-2 rounded-sm text-white'
+                        >
+                          Xem giỏ hàng
+                        </Link>
                       </div>
                     </div>
-                    <div className='mt-6 flex items-center justify-between'>
-                      <div className='capitalize text-sm text-gray-400'>Thêm vào giỏ hàng</div>
-                      <button className='capitalize bg-orange-600 hover:bg-opacity-80 px-4 yy-2 rounded-sm text-white'>
-                        Xem giỏ hàng
-                      </button>
+                  ) : (
+                    <div className='mt-2 bg-white w-[350px] h-[200px] flex items-center justify-center flex-col'>
+                      <img src={noProduct} className='overflow-hidden w-20 h-20 ' alt='no product' />
+                      <div className='mt-2'>Chưa Có Sản Phẩm</div>
                     </div>
-                  </div>
+                  )}
                 </div>
               }
             >
-              <Link to='/'>
+              <Link to={path.cart} className='relative'>
                 <svg
                   xmlns='http://www.w3.org/2000/svg'
                   fill='none'
@@ -228,6 +133,11 @@ export default function Header() {
                     d='M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z'
                   />
                 </svg>
+                {purchasesInCart && purchasesInCart.length > 0 && (
+                  <span className='absolute top-[-5px] left-[18px] rounded-full px-[9px] py-[1px] bg-white text-xs text-orange-600'>
+                    {purchasesInCart?.length}
+                  </span>
+                )}
               </Link>
             </Popover>
           </div>
