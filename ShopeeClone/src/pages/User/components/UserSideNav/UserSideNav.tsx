@@ -1,16 +1,18 @@
-import { Link } from 'react-router-dom'
+import classNames from 'classnames'
+import { useContext } from 'react'
+import { Link, NavLink } from 'react-router-dom'
 import { path } from 'src/constants/path'
+import { AppContext } from 'src/contexts/app.context'
+import { getAvatarUrl } from 'src/utils/utils'
 
 export default function UserSideNav() {
+  const { profile } = useContext(AppContext)
+
   return (
     <div>
       <div className='flex items-center border-b border-b-gray-200 py-4'>
         <Link to={path.profile} className='h-12 w-12 flex-shrink-0 overflow-hidden rounded-full border-black/10'>
-          <img
-            src='https://down-vn.img.susercontent.com/file/00f19b3560b8b12a609f50ef1e70809e_tn'
-            alt=''
-            className='h-full w-full object-cover'
-          />
+          <img src={getAvatarUrl(profile?.avatar)} alt='' className='h-full w-full object-cover' />
         </Link>
         <div className='flex-grow pl-4 '>
           <div className='mb-1 truncate font-semibold text-gray-600'>xuantruong</div>
@@ -33,7 +35,15 @@ export default function UserSideNav() {
         </div>
       </div>
       <div className='mt-7 '>
-        <Link to={path.profile} className='flex items-center capitalize text-orange-600 transition-colors'>
+        <NavLink
+          to={path.profile}
+          className={({ isActive }) =>
+            classNames('flex items-center capitalize transition-colors', {
+              'text-orange-600': isActive,
+              'text-gray-500': !isActive,
+            })
+          }
+        >
           <div className='mr-3 h-[22px] w-[22px]'>
             <img
               src='https://down-vn.img.susercontent.com/file/ba61750a46794d8847c3f463c5e71cc4'
@@ -42,8 +52,16 @@ export default function UserSideNav() {
             />
           </div>
           <div>Tài khoản của tôi</div>
-        </Link>
-        <Link to={path.changePassword} className='mt-4 flex items-center capitalize text-gray-600 transition-colors'>
+        </NavLink>
+        <NavLink
+          to={path.changePassword}
+          className={({ isActive }) =>
+            classNames('mt-4 flex items-center capitalize transition-colors', {
+              'text-orange-600': isActive,
+              'text-gray-500': !isActive,
+            })
+          }
+        >
           <div className='mr-3 h-[22px] w-[22px]'>
             <img
               src='https://down-vn.img.susercontent.com/file/ba61750a46794d8847c3f463c5e71cc4'
@@ -52,8 +70,16 @@ export default function UserSideNav() {
             />
           </div>
           <div>Đổi mật khẩu</div>
-        </Link>
-        <Link to={path.historyPurchase} className='mt-4 flex items-center capitalize text-gray-600 transition-colors'>
+        </NavLink>
+        <NavLink
+          to={path.historyPurchase}
+          className={({ isActive }) =>
+            classNames('mt-4 flex items-center capitalize transition-colors', {
+              'text-orange-600': isActive,
+              'text-gray-500': !isActive,
+            })
+          }
+        >
           <div className='mr-3 h-[22px] w-[22px]'>
             <img
               src='https://down-vn.img.susercontent.com/file/f0049e9df4e536bc3e7f140d071e9078'
@@ -62,7 +88,7 @@ export default function UserSideNav() {
             />
           </div>
           <div>Đơn mua</div>
-        </Link>
+        </NavLink>
       </div>
     </div>
   )

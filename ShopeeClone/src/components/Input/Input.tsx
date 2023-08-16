@@ -17,7 +17,7 @@ export default function Input({
   register,
   rules,
   classNameError = 'text-red-600 text-sm min-h-[1.25rem]',
-  classNameInput = 'p-3 w-full outline-none border border-gray-300 focus:border-gray-500 focus:shadow-sm rounded-sm ',
+  classNameInput = 'p-3 w-full outline-none border border-gray-300 focus:border-gray-500 focus:shadow-sm rounded-sm',
   ...rest
 }: Props) {
   const registerResult = register && name ? register(name, rules) : {}

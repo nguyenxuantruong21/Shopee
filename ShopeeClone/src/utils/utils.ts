@@ -1,5 +1,7 @@
 import axios, { AxiosError } from 'axios'
 import HttpStatusCode from 'src/constants/httpStatusCode.enum'
+import defaultAvt from '../assets/images/default-avatar.png'
+import config from 'src/constants/config'
 
 // handle axios error
 export function isAxiosError<T>(error: unknown): error is AxiosError<T> {
@@ -47,4 +49,9 @@ export const generateNameId = ({ name, id }: { name: string; id: string }) => {
 export const getIdFromNameId = (nameId: string) => {
   const arr = nameId.split('-i,')
   return arr[arr.length - 1]
+}
+
+// get avatar URL
+export const getAvatarUrl = (avatarName?: string) => {
+  return avatarName ? `${config.baseUrl}images/${avatarName}` : defaultAvt
 }

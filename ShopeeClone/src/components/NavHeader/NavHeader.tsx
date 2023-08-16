@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import Popover from '../Popover'
-import { formatEmailShowUI } from 'src/utils/utils'
+import { formatEmailShowUI, getAvatarUrl } from 'src/utils/utils'
 import { path } from 'src/constants/path'
 import { useContext } from 'react'
 import { AppContext } from 'src/contexts/app.context'
@@ -84,11 +84,7 @@ export default function NavHeader() {
           }
         >
           <div className='w-5 h-5 mr-2 flex-shrink-0 '>
-            <img
-              src='https://down-vn.img.susercontent.com/file/00f19b3560b8b12a609f50ef1e70809e_tn'
-              alt='avatar'
-              className='rounded-full w-full h-full object-cover'
-            />
+            <img src={getAvatarUrl(profile?.avatar)} alt='avatar' className='rounded-full w-full h-full object-cover' />
           </div>
           <div>{profile?.email && formatEmailShowUI(profile?.email)}</div>
         </Popover>

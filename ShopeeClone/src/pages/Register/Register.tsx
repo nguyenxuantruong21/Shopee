@@ -23,13 +23,13 @@ export default function Register() {
     formState: { errors },
     handleSubmit,
     register,
-    setError
+    setError,
   } = useForm<FormData>({
-    resolver: yupResolver(registerSchema)
+    resolver: yupResolver(registerSchema),
   })
 
   const registerAccountMutation = useMutation({
-    mutationFn: (body: Omit<FormData, 'confirm_password'>) => authApi.registerAccount(body)
+    mutationFn: (body: Omit<FormData, 'confirm_password'>) => authApi.registerAccount(body),
   })
 
   const onSubmit = handleSubmit((data) => {
@@ -50,7 +50,7 @@ export default function Register() {
             setError('password', { message: formError.password, type: 'Server' })
           }
         }
-      }
+      },
     })
   })
 
