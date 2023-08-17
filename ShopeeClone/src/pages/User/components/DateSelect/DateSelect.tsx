@@ -25,6 +25,7 @@ export default function DateSelect({ value, onChange, errorMessage }: Props) {
     }
   }, [value])
 
+  // handleChange value in form
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const { value: valueFromSelect, name } = event.target
     const newDate = {
@@ -32,7 +33,7 @@ export default function DateSelect({ value, onChange, errorMessage }: Props) {
       date: value?.getDate() || date.date,
       month: value?.getMonth() || date.month,
       year: value?.getFullYear() || date.year,
-      // set new value
+      // override and set new value
       [name]: Number(valueFromSelect),
     }
     onChange && onChange(new Date(newDate.year, newDate.month, newDate.date))

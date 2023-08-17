@@ -216,7 +216,7 @@ export default function ProductDetail() {
               </div>
               <div className='mt-8 flex items-center bg-gray-50 py-4 px-4'>
                 <div className='text-gray-500 line-through'>₫{formatCurrency(product.price_before_discount)}</div>
-                <div className='ml-3 text-3xl text-orange-600 font-medium'>₫{formatCurrency(product.price)}</div>
+                <div className='ml-3 text-3xl text-orange-600 font-medium'>₫{formatCurrency(product.price)}</div>i
                 <div className='bg-orange-600 ml-3 px-1 text-white text-xs rounded-sm uppercase font-semibold'>
                   {discountRate(product.price_before_discount, product.price)} Giảm
                 </div>

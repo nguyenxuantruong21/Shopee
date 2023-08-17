@@ -78,6 +78,7 @@ export default function Profile() {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
+      // update avatar
       let avatarName = avatar
       if (file) {
         const form = new FormData()
@@ -86,6 +87,7 @@ export default function Profile() {
         avatarName = String(uploadRes.data.data)
         setValue('avatar', avatarName)
       }
+      // update information
       const res = await updateProfileMutation.mutateAsync({
         ...data,
         date_of_birth: data.date_of_birth?.toISOString(),
@@ -115,6 +117,7 @@ export default function Profile() {
     }
   })
 
+  // truyen vao props onChange cua component InputFile
   const handleChangeFile = (file?: File) => {
     setFile(file)
   }

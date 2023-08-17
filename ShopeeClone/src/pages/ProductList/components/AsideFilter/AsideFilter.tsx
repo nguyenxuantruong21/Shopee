@@ -10,7 +10,7 @@ import { Schema, schema } from 'src/utils/rules'
 import { NoUndefinedField } from 'src/types/utils.type'
 import { ObjectSchema } from 'yup'
 import RatingStar from 'src/pages/ProductList/components/RatingStar'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 import { QueryConfig } from 'src/hooks/useQueryConfig'
 
 interface Props {

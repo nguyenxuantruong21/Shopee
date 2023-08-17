@@ -73,7 +73,7 @@ export default function NavHeader() {
                 <Link to={path.profile} className='py-2 px-3 hover:text-[#26aa99] text-left'>
                   Tài khoản của tôi
                 </Link>
-                <Link to='/' className='py-2 px-3 hover:text-[#26aa99] text-left'>
+                <Link to={path.historyPurchase} className='py-2 px-3 hover:text-[#26aa99] text-left'>
                   Đơn mua
                 </Link>
                 <button className='py-2 px-3  hover:text-[#26aa99] text-left' onClick={handleLogout}>

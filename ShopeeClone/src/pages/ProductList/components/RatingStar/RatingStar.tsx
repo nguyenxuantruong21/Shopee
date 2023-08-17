@@ -1,7 +1,7 @@
 import classNames from 'classnames'
 import { createSearchParams, useNavigate } from 'react-router-dom'
 import { path } from 'src/constants/path'
-import { QueryConfig } from 'src/pages/ProductList/ProductList'
+import { QueryConfig } from 'src/hooks/useQueryConfig'
 
 interface Props {
   queryConfig: QueryConfig
@@ -15,8 +15,8 @@ export default function RatingStar({ queryConfig }: Props) {
       pathname: path.home,
       search: createSearchParams({
         ...queryConfig,
-        rating_filter: String(ratingFilter)
-      }).toString()
+        rating_filter: String(ratingFilter),
+      }).toString(),
     })
   }
 
@@ -30,7 +30,7 @@ export default function RatingStar({ queryConfig }: Props) {
             <li className={'py-1 pl-2 cursor-pointer'} key={index}>
               <div
                 className={classNames('flex items-center text-sm pl-3 w-44 py-1', {
-                  'bg-gray-300/80 rounded-xl': isActive
+                  'bg-gray-300/80 rounded-xl': isActive,
                 })}
                 onClick={() => handleFilterStar(5 - index)}
                 tabIndex={0}

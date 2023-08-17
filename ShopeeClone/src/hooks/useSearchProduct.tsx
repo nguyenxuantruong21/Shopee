@@ -4,7 +4,7 @@ import { path } from 'src/constants/path'
 import useQueryConfig from 'src/hooks/useQueryConfig'
 import { useForm } from 'react-hook-form'
 import { Schema, schema } from 'src/utils/rules'
-import { omit } from 'lodash'
+import omit from 'lodash/omit'
 
 type FormData = Pick<Schema, 'name'>
 const nameSchema = schema.pick(['name'])
