@@ -11,6 +11,7 @@ import { useContext } from 'react'
 import { AppContext } from 'src/contexts/app.context'
 import Button from 'src/components/Button'
 import { Schema, schema } from 'src/utils/rules'
+import { Helmet } from 'react-helmet-async'
 
 type FormData = Pick<Schema, 'email' | 'password'>
 const loginSchema = schema.pick(['email', 'password'])
@@ -21,20 +22,19 @@ export default function Login() {
     formState: { errors },
     handleSubmit,
     register,
-    setError
+    setError,
   } = useForm<FormData>({
-    resolver: yupResolver(loginSchema)
+    resolver: yupResolver(loginSchema),
   })
 
   const loginAccountMutation = useMutation({
-    mutationFn: (body: FormData) => authApi.LoginAccount(body)
+    mutationFn: (body: FormData) => authApi.LoginAccount(body),
   })
 
   const onSubmit = handleSubmit((data) => {
     loginAccountMutation.mutate(data, {
       onSuccess: (data) => {
         setIsAuthenticated(true)
-        console.log(data)
         setProfile(data.data.data.user)
       },
       onError: (error) => {
@@ -47,12 +47,16 @@ export default function Login() {
             setError('password', { message: formError.password, type: 'Server' })
           }
         }
-      }
+      },
     })
   })
 
   return (
     <div className='bg-orange-600'>
+      <Helmet>
+        <title>Đăng nhập | Shopee Clone</title>
+        <meta name='description' content='Đăng nhập vào dự án shopee clone' />
+      </Helmet>
       <div className='container'>
         <div className='grid grid-cols-1 lg:grid-cols-5 py-12 lg:py-32 lg:pr-10'>
           <div className='lg:col-span-2 lg:col-start-4'>
@@ -68,14 +72,15 @@ export default function Login() {
                 autoComplete='on'
               />
               <Input
-                type='text'
+                type='password'
                 name='password'
                 placeholder='Password'
                 register={register}
-                className='mt-2'
+                className='mt-2 relative'
                 errorMassage={errors.password?.message}
                 autoComplete='on'
               />
+
               <div className='mt-2'>
                 <Button
                   type='submit'

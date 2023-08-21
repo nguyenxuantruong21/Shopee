@@ -14,6 +14,7 @@ import { setProfileToLS } from 'src/utils/auth'
 import { getAvatarUrl, isAxiosErrorUnprocessableEntity } from 'src/utils/utils'
 import { ErrorResponse } from 'src/types/utils.type'
 import InputFile from 'src/components/InputFile'
+import { Helmet } from 'react-helmet-async'
 
 type FormData = Pick<UserSchema, 'name' | 'phone' | 'address' | 'date_of_birth' | 'avatar'>
 // type FormDateError form SERVER
@@ -124,6 +125,10 @@ export default function Profile() {
 
   return (
     <div className='rounded-sm bg-white px-2 md:px-7 pb-10 md:pb-20 shadow'>
+      <Helmet>
+        <title>Trang cá nhân | Shopee Clone</title>
+        <meta name='description' content='trang cá nhân dự án shopee clone' />
+      </Helmet>
       <div className='border-b border-b-gray-200 py-4'>
         <h1 className='text-gray-900 text-lg font-medium capitalize px-10'>Hồ Sơ Của Tôi</h1>
         <p className='text-gray-700 text-sm mt-1 px-10'>Quản lý trang thông tin hồ sơ để bảo vệ tài khoản</p>

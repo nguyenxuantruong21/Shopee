@@ -12,6 +12,7 @@ import purchaseAPI from 'src/apis/purchase.api'
 import { purchasesStatus } from 'src/constants/purchase'
 import { toast } from 'react-toastify'
 import { path } from 'src/constants/path'
+import { Helmet } from 'react-helmet-async'
 
 export default function ProductDetail() {
   const [buyCount, setByCount] = useState(1)
@@ -134,6 +135,10 @@ export default function ProductDetail() {
   if (!product) return null
   return (
     <div className='bg-gray-200 py-6'>
+      <Helmet>
+        <title>{product.name}| Shopee Clone</title>
+        <meta name='description' content={product.description} />
+      </Helmet>
       <div className='container'>
         <div className='bg-white p-4 shadow'>
           <div className='grid grid-cols-12 gap-9'>
@@ -216,7 +221,7 @@ export default function ProductDetail() {
               </div>
               <div className='mt-8 flex items-center bg-gray-50 py-4 px-4'>
                 <div className='text-gray-500 line-through'>₫{formatCurrency(product.price_before_discount)}</div>
-                <div className='ml-3 text-3xl text-orange-600 font-medium'>₫{formatCurrency(product.price)}</div>i
+                <div className='ml-3 text-3xl text-orange-600 font-medium'>₫{formatCurrency(product.price)}</div>
                 <div className='bg-orange-600 ml-3 px-1 text-white text-xs rounded-sm uppercase font-semibold'>
                   {discountRate(product.price_before_discount, product.price)} Giảm
                 </div>
