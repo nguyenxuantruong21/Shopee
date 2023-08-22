@@ -31,7 +31,7 @@ class Http {
       headers: {
         'Content-Type': 'application/json',
         'expire-access-token': 10, // 10s
-        'expire-refresh-token': 2 * 10,
+        'expire-refresh-token': 60 * 60,
       },
     })
     this.instance.interceptors.request.use(
