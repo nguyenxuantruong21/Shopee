@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { isAxiosError, isAxiosErrorUnprocessableEntity } from '../utils'
+import { formatEmailShowUI, isAxiosError, isAxiosErrorUnprocessableEntity } from '../utils'
 import { AxiosError } from 'axios'
 
 describe('isAxiosError', () => {
@@ -20,5 +20,11 @@ describe('isAxiosErrorUnprocessableEntity', () => {
         } as any),
       ),
     ).toBe(true)
+  })
+})
+
+describe('formatEmail', () => {
+  it('format email', () => {
+    expect(formatEmailShowUI('xuantruongdev@gmail.com')).toBe('xuantruongdev')
   })
 })

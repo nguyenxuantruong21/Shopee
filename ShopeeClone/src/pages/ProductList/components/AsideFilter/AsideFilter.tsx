@@ -12,6 +12,7 @@ import { ObjectSchema } from 'yup'
 import RatingStar from 'src/pages/ProductList/components/RatingStar'
 import omit from 'lodash/omit'
 import { QueryConfig } from 'src/hooks/useQueryConfig'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
   queryConfig: QueryConfig
@@ -23,6 +24,7 @@ type FormData = NoUndefinedField<Pick<Schema, 'price_min' | 'price_max'>>
 const priceSchema = schema.pick(['price_min', 'price_max'])
 
 export default function AsideFilter({ categories, queryConfig }: Props) {
+  const { t } = useTranslation()
   const { category } = queryConfig
   const navigate = useNavigate()
 
@@ -79,7 +81,7 @@ export default function AsideFilter({ categories, queryConfig }: Props) {
             </g>
           </g>
         </svg>
-        Tất cả danh mục
+        {t('all categories')}
       </Link>
       <div className='bg-gray-300 h-[1px] my-4'></div>
       <ul>
@@ -128,11 +130,11 @@ export default function AsideFilter({ categories, queryConfig }: Props) {
             ></polyline>
           </g>
         </svg>
-        Bộ lọc tìm kiếm
+        {t('filter search')}
       </Link>
       <div className='bg-gray-300 h-[1px] my-4' />
       <div className='my-5'>
-        <div>Khoảng giá</div>
+        <div>{t('price-range')}</div>
         <form className='mt-2 ' onSubmit={onSubmit}>
           <div className='flex items-start h-12'>
             <Controller
@@ -174,19 +176,19 @@ export default function AsideFilter({ categories, queryConfig }: Props) {
             type='submit'
             className=' w-full text-center bg-orange-600 py-2 px-2 text-white  hover:bg-orange-600/80'
           >
-            Áp dụng
+            {t('-apply')}
           </Button>
         </form>
       </div>
       <div className='bg-gray-300 h-[1px] my-4' />
-      <div className='text-sm'>Đánh giá</div>
+      <div className='text-sm'>{t('-Evaluate')}</div>
       <RatingStar queryConfig={queryConfig} />
       <div className='bg-gray-300 h-[1px] my-4' />
       <button
         onClick={handleRemoveAll}
         className=' w-full text-center bg-orange-600 py-2 px-2 text-white hover:bg-orange-600/80'
       >
-        Xoá tất cả
+        {t('delete all')}
       </button>
     </div>
   )

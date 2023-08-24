@@ -19,7 +19,7 @@ export default function NavHeader() {
   const queryClient = useQueryClient()
 
   const logoutMutation = useMutation({
-    mutationFn: authApi.logoutAccount,
+    mutationFn: authApi.logout,
     onSuccess: () => {
       setIsAuthenticated(false)
       setProfile(null)

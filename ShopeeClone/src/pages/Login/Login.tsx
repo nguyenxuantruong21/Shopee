@@ -28,7 +28,7 @@ export default function Login() {
   })
 
   const loginAccountMutation = useMutation({
-    mutationFn: (body: FormData) => authApi.LoginAccount(body),
+    mutationFn: (body: FormData) => authApi.login(body),
   })
 
   const onSubmit = handleSubmit((data) => {

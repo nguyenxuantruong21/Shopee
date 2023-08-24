@@ -14,11 +14,27 @@ const resources = {
   en: {
     translation: {
       'all categories': 'All Categories',
+      'filter search': 'Filter Search',
+      't-shirt': 'T Shirt',
+      '-clock': 'Clock',
+      'smart-phone': 'Smart Phone',
+      'price-range': 'Price Range',
+      '-apply': 'Apply',
+      '-Evaluate': 'Evaluate',
+      'delete all': 'Delete All',
     },
   },
   vi: {
     translation: {
       'all categories': 'Tất cả danh mục',
+      'filter search': 'Bộ lọc tìm kiếm',
+      't-shirt': 'Áo thun',
+      '-clock': 'Đồng hồ',
+      'smart-phone': 'Điện thoại',
+      'price-range': 'Khoảng giá',
+      '-apply': 'Áp dụng',
+      '-Evaluate': 'Đánh giá',
+      'delete all': 'Xóa tất cả',
     },
   },
 }

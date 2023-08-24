@@ -10,10 +10,10 @@ const authApi = {
   registerAccount(body: { email: string; password: string }) {
     return http.post<AuthResponse>(URL_REGISTER, body)
   },
-  LoginAccount(body: { email: string; password: string }) {
+  login(body: { email: string; password: string }) {
     return http.post<AuthResponse>(URL_LOGIN, body)
   },
-  logoutAccount() {
+  logout() {
     return http.post(URL_LOGOUT)
   },
 }

@@ -44,11 +44,13 @@ export default function Register() {
       onError: (error) => {
         if (isAxiosErrorUnprocessableEntity<ErrorResponse<Omit<FormData, 'confirm_password'>>>(error)) {
           const formError = error.response?.data.data
-          if (formError?.email) {
-            setError('email', { message: formError.email, type: 'Server' })
-          }
-          if (formError?.password) {
-            setError('password', { message: formError.password, type: 'Server' })
+          if (formError) {
+            Object.keys(formError).forEach((key) => {
+              setError(key as keyof Omit<FormData, 'confirm_password'>, {
+                message: formError[key as keyof Omit<FormData, 'confirm_password'>],
+                type: 'Server',
+              })
+            })
           }
         }
       },
@@ -64,16 +66,15 @@ export default function Register() {
       <div className='container'>
         <div className='grid grid-cols-1 py-12 lg:grid-cols-5 lg:py-32 lg:pr-10'>
           <div className='lg:col-span-2 lg:col-start-4'>
-            <form className='bg-white p-10 shadow-sm  rounded-md' onSubmit={onSubmit}>
+            <form className='bg-white p-10 shadow-sm  rounded-md' onSubmit={onSubmit} noValidate>
               <div className='text-2xl'>Đăng Ký</div>
               <Input
-                type='text'
+                type='email'
                 name='email'
                 placeholder='Email'
                 register={register}
                 className='mt-8'
                 errorMassage={errors.email?.message}
-                autoComplete='on'
               />
               <Input
                 type='password'
@@ -83,15 +84,17 @@ export default function Register() {
                 className='mt-2 relative'
                 errorMassage={errors.password?.message}
                 autoComplete='on'
+                classNameEye='absolute right-[5px] h-5 w-5 cursor-pointer top-[12px]'
               />
               <Input
                 type='password'
-                name='password'
-                placeholder='Password'
+                name='confirm_password'
+                placeholder='Confirm Password'
                 register={register}
                 className='mt-2 relative'
                 errorMassage={errors.password?.message}
                 autoComplete='on'
+                classNameEye='absolute right-[5px] h-5 w-5 cursor-pointer top-[12px]'
               />
               <div className='mt-2'>
                 <Button
